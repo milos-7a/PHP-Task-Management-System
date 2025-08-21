@@ -21,6 +21,7 @@ class Grupa {
             $this->error = "Greška pri izmeni grupe: " . $this->db->error;
             return false;
         } 
+        header("Location: " . $_SERVER['PHP_SELF']);
         return true;
     }
 
@@ -35,6 +36,7 @@ class Grupa {
             $this->error = "Greška pri izmeni grupe: " . $this->db->error;
             return false;
         } 
+        header("Location: " . $_SERVER['PHP_SELF']);
         return true;
     }
 
@@ -45,12 +47,24 @@ class Grupa {
         $query = "UPDATE grupe_zadataka SET name = ? WHERE id = ? AND created_by = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("sii", $group_name, $group_id, $this->user_id);
-
+        
         if (!$stmt->execute()) {
             $this->error = "Greška pri izmeni grupe: " . $this->db->error;
             return false;
         } 
+        header("Location: " . $_SERVER['PHP_SELF']);
         return true;
+    }
+
+    // Vrati grupe
+    public function getGroups (){
+        $groups = [];
+        $groups_query = "SELECT id, name FROM grupe_zadataka WHERE created_by = ?";
+        $stmt = $this->db->prepare($groups_query);
+        $stmt->bind_param("i", $this->user_id);
+        $stmt->execute();
+        $groups = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        return $groups;
     }
 
     // Dohvatanje greške

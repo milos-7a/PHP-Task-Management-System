@@ -1,11 +1,5 @@
 <?php
-include 'includes/config.php';
-
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'manager') {
-    http_response_code(403);
-    echo json_encode(['error' => 'Neovlašćeni pristup']);
-    exit;
-}
+include 'config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['task_id']) || !isset($_POST['comment'])) {

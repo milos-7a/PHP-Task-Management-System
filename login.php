@@ -18,13 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
-            if ($user['role'] === 'manager') {
-                header("Location: dashboard_manager.php");
-            } elseif ($user['role'] === 'admin') {
-                header("Location: dashboard_admin.php");
-            } else {
-                header("Location: dashboard.php");
-            }
+            header("Location: dashboard.php");
             exit;
         } else {
             $error = "Pogrešna lozinka!";

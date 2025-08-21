@@ -1,15 +1,9 @@
 <?php
-include 'includes/config.php';
-
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
-    echo "Niste prijavljeni.";
-    exit;
-}
+include 'config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $comment_id = (int)$_POST['comment_id'];
-
+    $user_id = (int)$_POST['user_id'];
     $query = "DELETE FROM komentari_zadatka WHERE id = ?";
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $comment_id);

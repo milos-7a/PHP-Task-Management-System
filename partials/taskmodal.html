@@ -1,0 +1,46 @@
+<div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Izmena zadatka</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="taskForm">
+          <input type="hidden" name="task_id" id="task_id">
+
+          <div class="mb-3">
+            <label class="form-label">Naslov</label>
+            <input type="text" class="form-control" name="title" id="task_title">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Opis</label>
+            <textarea class="form-control" name="description" id="task_description"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Rok</label>
+            <input type="datetime-local" class="form-control" name="deadline" id="task_deadline">
+          </div>
+    
+          <div class="mb-3">
+            <label class="form-label">Prioritet</label>
+            <input type="range" class="form-control" name="priority" id="task_priority" min="1" max="10">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status" id="task_status">
+              <option value="open">Otvoreno</option>
+              <option value="completed">Zavrseno</option>
+              <option value="canceled">Otkazano</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Sačuvaj izmene</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
