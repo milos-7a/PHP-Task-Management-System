@@ -8,12 +8,13 @@
             <tbody>
                 <?php foreach ($tasks as $task): ?>
                     <tr>
-                        <th>
+                        <th> <?php if($role !== 'executor'): ?>
                             <button class="btn btn-sm btn-outline-danger delete-task" 
                                     data-task-id="<?php echo $task['id']; ?>" 
                                     title="Obriši">
                                 <i class="bi bi-trash"></i>
                             </button>
+                            <?php endif; ?>
                         </th>
                         <th>Naslov</th>
                         <th>Opis</th>
@@ -26,7 +27,7 @@
                         <th>Akcije</th>
                     </tr>
                     <tr>
-                        <td>
+                        <td> <?php if($role !== 'executor'): ?>
                             <button class="btn btn-sm btn-outline-primary modify-task" 
                                     data-task-id="<?php echo $task['id']; ?>"
                                     data-title="<?php echo htmlspecialchars($task['title']); ?>"
@@ -34,9 +35,17 @@
                                     data-deadline="<?php echo htmlspecialchars($task['deadline']); ?>"
                                     data-priority="<?php echo htmlspecialchars($task['priority']); ?>"
                                     data-status="<?php echo htmlspecialchars($task['status']); ?>"
+                                    data-group-id="<?php echo htmlspecialchars($task['group_id']); ?>"
+                                    data-group-name="<?php echo htmlspecialchars($task['group_name']); ?>"
+                                    data-manager-name="<?php echo htmlspecialchars($task['manager_name']); ?>"
+                            <?php   $taskfilepath = array_column($attachments[$task['id']], 'file_path');
+                                    $user_ids = array_column(getExecutorsList($db, (int)$task['id']), 'user_id');?>
+                                    data-attachments="<?php echo htmlspecialchars(json_encode($taskfilepath)); ?>"    
+                                    data-executors="<?php echo htmlspecialchars(json_encode($user_ids)); ?>"                                
                                     title="Izmeni">
                                 <i class="bi bi-pencil-square text-dark"></i>
                             </button>
+                            <?php endif; ?>
                         </td>
                         <td><?php echo htmlspecialchars($task['title']); ?></td>
                         <td><?php echo htmlspecialchars($task['description']); ?></td>
@@ -65,9 +74,9 @@
                         </td>
                         <td>
                             <?php if (!empty($attachments[$task['id']])): ?>
-                                <?php foreach ($attachments[$task['id']] as $attachment): ?>
+                                <?php foreach ($attachments[$task['id']] as $attachment):?>
                                     <a href="<?php echo htmlspecialchars($attachment['file_path']); ?>" target="_blank">Prilog</a><br>
-                                <?php endforeach; ?>
+                                <?php endforeach;?>
                             <?php else: ?>
                                 Nema priloga
                             <?php endif; ?>
@@ -76,11 +85,11 @@
                             <?php if ($task['status'] == 'open'): ?>
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
-                                    <?php if ($user['role'] == 'executor'): ?>
+                                    <?php if ($user['role'] == 'executor' && isTaskExecutor($db, $user_id, $task['id'])): ?>
                                         <?php if (!hasUserCompletedTask($db, (int)$task['id'], $user_id)): ?>
                                             <button type="submit" name="zavrsi_zadatak" class="btn btn-success btn-sm"><i class="bi bi-clipboard2-check"></i></button>
                                         <?php else: ?>
-                                            <span class="text-success">Zadatak je završen</span>
+                                            <span class="text-success">Zadatak je predat</span>
                                         <?php endif; ?>
                                     <?php elseif ($user['role'] !== 'executor'): ?>
                                         <button type="submit" name="zavrsi_zadatak" class="btn btn-success btn-sm"><i class="bi bi-clipboard2-check"></i></button>
@@ -113,6 +122,7 @@
                                     <p>Nema komentara.</p>
                                 <?php endif; ?>
                             </div>
+                            <?php if(isTaskExecutor($db, $user_id, $task['id']) || $role == 'admin' || $role == 'manager'): ?>
                             <form class="comment-form" data-task-id="<?php echo $task['id']; ?>">
                                 <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
                                 <div class="input-group mb-3">
@@ -120,6 +130,7 @@
                                     <button type="submit" class="btn btn-primary">Pošalji</button>
                                 </div>
                             </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

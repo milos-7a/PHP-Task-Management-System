@@ -6,7 +6,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="taskForm">
+        <form id="taskForm" enctype="multipart/form-data" method="POST">
           <input type="hidden" name="task_id" id="task_id">
 
           <div class="mb-3">
@@ -20,6 +20,28 @@
           </div>
 
           <div class="mb-3">
+              <label for="form-label" class="form-label">Grupa</label>
+              <select class="form-control" id="task_group_id" name="group_id" required>
+                  <?php foreach ($groups as $group): ?>
+                      <option value="<?php echo $group['id']; ?>">
+                          <?php echo htmlspecialchars($group['name']); ?>
+                      </option>
+                  <?php endforeach; ?>
+              </select>
+          </div>
+        
+          <div class="mb-3">
+              <label for="form-label" class="form-label">Izvršioci</label>
+              <select class="form-control" id="task_executors" name="executors[]" multiple>
+                  <?php foreach ($executors as $executor): ?>
+                      <option value="<?php echo $executor['id']; ?>">
+                          <?php echo htmlspecialchars($executor['name']); ?>
+                      </option>
+                  <?php endforeach; ?>
+              </select>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label">Rok</label>
             <input type="datetime-local" class="form-control" name="deadline" id="task_deadline">
           </div>
@@ -27,6 +49,17 @@
           <div class="mb-3">
             <label class="form-label">Prioritet</label>
             <input type="range" class="form-control" name="priority" id="task_priority" min="1" max="10">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Dodaj nove priloze</label>
+            <input type="file" class="form-control" id="task_attachments" name="prilozi[]" multiple>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Postojeći prilozi</label>
+            <div id="existing_attachments">
+            </div>
           </div>
 
           <div class="mb-3">

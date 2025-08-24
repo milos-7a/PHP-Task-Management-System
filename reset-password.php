@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Sačuvaj token u bazi
         $query = "INSERT INTO token_resetlozinke (user_id, token, expires_at) VALUES ($user_id, '$token', '$expires_at')";
         if ($db->query($query)) {
-            // Pošalji email sa linkom
             $mail = new PHPMailer(true);
             try {
                 $mail->SMTPDebug = 0; 

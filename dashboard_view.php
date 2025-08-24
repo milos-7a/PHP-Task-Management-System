@@ -12,6 +12,98 @@
 <body>
 <div class="container">
     <h2>Dobrodošao, <?php echo htmlspecialchars($user['name']); ?>!</h2>
+    <?php if ($user['role'] === 'admin'): ?>
+        <h2>Korisnici</h2>
+        <button class="btn btn-sm btn-primary create-user-btn"
+            data-bs-toggle="modal" data-bs-target="#userModal">
+            Kreiraj korisnika
+        </button>
+        <?php foreach ($roles as $uloge): ?>
+            <h4 class="mt-4"><?= ucfirst($uloge) ?>:</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Ime</th>
+                        <th>Email</th>
+                        <th>Telefon</th>
+                        <th>Akcije</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($korisnici as $korisnik): ?>
+                        <?php if ($korisnik['role'] === $uloge): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($korisnik['name']) ?></td>
+                            <td><?= htmlspecialchars($korisnik['email']) ?></td>
+                            <td><?= htmlspecialchars($korisnik['phone']) ?></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary edit-user-btn"
+                                    data-user='<?= json_encode($korisnik) ?>'
+                                    data-bs-toggle="modal" data-bs-target="#userModal">
+                                    <i class="bi bi-pencil-square text-dark"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-user-btn"
+                                    data-user='<?= json_encode($korisnik) ?>'>
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endforeach; ?>
+        <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="userForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Dodaj korisnika</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                <input type="hidden" id="user_id" name="user_id">
+                <div class="mb-3">
+                    <label>Username</label>
+                    <input type="text" class="form-control" name="username" id="username" required>
+                </div>
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" class="form-control" name="email" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password" id="password">
+                </div>
+                <div class="mb-3">
+                    <label>Ime i prezime</label>
+                    <input type="text" class="form-control" name="name" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label>Telefon</label>
+                    <input type="text" class="form-control" name="phone" id="phone">
+                </div>
+                <div class="mb-3">
+                    <label>Datum rođenja</label>
+                    <input type="date" class="form-control" name="birth_date" id="birth_date">
+                </div>
+                <div class="mb-3">
+                    <label>Uloga</label>
+                    <select class="form-control" name="role" id="role" required>
+                    <option value="admin">Admin</option>
+                    <option value="manager">Menadžer</option>
+                    <option value="executor">Izvršilac</option>
+                    </select>
+                </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" id="userModalSaveBtn" class="btn btn-primary">Sačuvaj</button>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
+        <?php endif; ?>
 
     <?php if ($user['role'] !== 'executor'): ?>
         <!-- Kreiranje grupe -->
@@ -86,7 +178,7 @@
         </form>                   
     
     <?php endif; ?>
-    <?php include 'partials/taskmodal.html' ?>
+    <?php include 'partials/taskmodal.php' ?>
     <!-- Ukljucivanje filtera -->
     <?php include 'partials/tasks_filters.php'; ?>
     <a href="logout.php" class="btn btn-primary">Odjavi se</a>
@@ -152,30 +244,161 @@
 
     // Klik na "Izmeni"
     $(document).on("click", ".modify-task", function () {
-        $("#task_id").val($(this).data("task-id"));
-        $("#task_title").val($(this).data("title"));
-        $("#task_description").val($(this).data("description"));
-        $("#task_deadline").val($(this).data("deadline"));
-        $("#task_priority").val($(this).data("priority"));
-        $("#task_status").val($(this).data("status"));
+        const btn = $(this);
+
+        const taskId = btn.data("task-id");
+        const title = btn.data("title");
+        const description = btn.data("description");
+        const deadline = btn.data("deadline");
+        const priority = btn.data("priority");
+        const status = btn.data("status");
+        const groupId = btn.data("group-id");
+        const attachments = btn.data("attachments") || [];
+        const executors = btn.data("executors") || [];
+
+        $("#task_id").val(taskId);
+        $("#task_title").val(title);
+        $("#task_description").val(description);
+        $("#task_deadline").val(deadline);
+        $("#task_priority").val(priority);
+        $("#task_status").val(status);
+        $("#task_group_id").val(groupId);
+        $("#task_executors").val(executors);
+
+        const attachmentsDiv = $("#existing_attachments");
+        attachmentsDiv.html(""); 
+        attachments.forEach(filePath => {
+            const fileName = filePath.split("/").pop();
+            const html = `
+                <div class="d-flex align-items-center mb-1" data-file-path="${filePath}">
+                    <a href="${filePath}" target="_blank" class="me-2">${fileName}</a>
+                    <button type="button" class="btn btn-sm btn-danger remove-attachment">Obriši</button>
+                </div>
+            `;
+            attachmentsDiv.append(html);
+        });
+
         $("#taskModal").modal("show");
+    });
+
+    // Brisanje postojećeg priloga
+    $(document).on("click", ".remove-attachment", function () {
+        const wrapper = $(this).closest("div[data-file-path]");
+        const filePath = wrapper.data("file-path");
+
+        if (confirm("Da li ste sigurni da želite da obrišete ovaj prilog?")) {
+            $.ajax({
+                url: "includes/delete_attachment.php",
+                type: "POST",
+                data: { file_path: filePath },
+                success: function (response) {
+                    wrapper.remove();
+                },
+                error: function () {
+                    alert("Došlo je do greške prilikom brisanja priloga.");
+                }
+            });
+        }
     });
 
     // Slanje forme
     $("#taskForm").on("submit", function (e) {
         e.preventDefault();
+            const formData = new FormData(this);
+            formData.append("user_id", "<?php echo $user_id; ?>");
+            $.ajax({
+                url: "includes/update_task.php",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response){
+                    console.log(response);
+                    $("#taskModal").modal("hide");
+                    location.reload();
+                },
+                error: function(err){
+                    console.error(err);
+                    alert("Greška prilikom slanja fajlova.");
+                }
+            });
+    });
+
+    let isEditMode = false;
+
+    function openAddUserModal() {
+        isEditMode = false;
+        $("#userModalLabel").text("Dodaj korisnika");
+        $("#userModalSaveBtn").text("Dodaj");
+        $("#userForm")[0].reset();
+        $("#user_id").val(""); 
+        $("#userModal").modal("show");
+    }
+
+    function openEditUserModal(user) {
+        isEditMode = true;
+        $("#userModalLabel").text("Izmeni korisnika");
+        $("#userModalSaveBtn").text("Sačuvaj");
+
+        $("#user_id").val(user.id);
+        $("#username").val(user.username);
+        $("#email").val(user.email);
+        $("#password").val(""); 
+        $("#name").val(user.name);
+        $("#phone").val(user.phone);
+        $("#birth_date").val(user.birth_date);
+        $("#role").val(user.role);
+
+        $("#userModal").modal("show");
+    }
+    
+    $(".edit-user-btn").click(function(){
+        const user = $(this).data("user");
+        openEditUserModal(user);
+    });
+    $(".create-user-btn").click(function(){
+        openAddUserModal();
+    });
+
+    $(".delete-user-btn").click(function(){
+        if (!confirm("Da li ste sigurni da želite da obrišete korisnika?")) return;
+
+        const user = $(this).data("user");
+        var user_id = user.id;
 
         $.ajax({
-            url: "includes/update_task.php",
+            url: 'includes/delete_user.php',
             type: "POST",
-            data: $(this).serialize(),
+            data: { user_id },
             success: function (response) {
-                alert("Zadatak uspešno izmenjen!");
+                alert("Korisnik obrisan!");
+                location.reload(); 
+            },
+            error: function () {
+                alert("Greška pri brisanju!");
+                error_log(url);
+            }
+        });
+    });
+
+    // Submit forme
+    $("#userForm").on("submit", function(e) {
+        e.preventDefault();
+
+        let formData = $(this).serialize();
+
+        $.ajax({
+            url: isEditMode ? "includes/update_user.php" : "includes/create_user.php",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                console.log(response);
+                $("#userModal").modal("hide");
                 location.reload();
             },
-            error: function (xhr) {
-                alert("Greška pri izmeni zadatka!");
-                console.log(xhr.responseText);
+            error: function(err) {
+                console.error(err);
+                alert("Greška prilikom čuvanja korisnika.");
             }
         });
     });

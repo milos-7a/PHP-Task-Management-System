@@ -6,10 +6,13 @@ include 'classes/Grupa.php';
 include 'classes/Zadatak.php';
 
 $role = $_SESSION['role'];
-error_log($role);
 require_role($role);
+error_log($role);
 $user_id = $_SESSION['user_id'];
 $user = getUserById($db, $user_id);
+
+// Uloge
+$roles = ['admin', 'manager', 'executor'];
 
 // Grupe
 $grupe = new Grupa($db, $user_id);
@@ -59,7 +62,8 @@ $filter_user     = $filters['user_id'];
 $comments = getComments($db, $tasks);
 $attachments = getAttachments($db, $tasks);
 
-
+// Korisnici
+$korisnici = $taskFilter->getUsers();
 
 include 'dashboard_view.php';
 ?>

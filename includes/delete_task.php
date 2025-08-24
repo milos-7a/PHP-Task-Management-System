@@ -1,5 +1,5 @@
 <?php
-require "config.php"; 
+require_once "config.php";
 
 if (isset($_POST['task_id'])) {
     $task_id = (int)$_POST['task_id'];

@@ -76,6 +76,10 @@ class TaskFilter {
         $query = "SELECT id, name FROM korisnici WHERE role = 'executor'";
         return $this->db->query($query)->fetch_all(MYSQLI_ASSOC);
     }
+    public function getUsers() {
+        $query = "SELECT * FROM korisnici ORDER BY role, name";
+        return $this->db->query($query)->fetch_all(MYSQLI_ASSOC);
+    }
     public function getFilters() {
     return $this->filters;
     }

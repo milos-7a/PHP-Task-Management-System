@@ -1,6 +1,8 @@
 <?php
 // Pokretanje sesije
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Postavke za konekciju na MySQL bazu podataka
 define('DB_HOST', 'localhost');

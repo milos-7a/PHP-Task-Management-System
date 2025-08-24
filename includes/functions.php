@@ -1,5 +1,5 @@
 <?php   
-
+require_once "config.php";
 function require_role($role) {
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== $role) {
         header("Location: login.php");
@@ -52,7 +52,6 @@ function getAttachments($db, $tasks){
         $attachments[$task['id']] = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
     return $attachments;
-
 }
 
 function hasUserCompletedTask($db, $task_id, $user_id) {
@@ -71,7 +70,7 @@ function hasUserCompletedTask($db, $task_id, $user_id) {
 }
 
 function getExecutorsList($db, $task_id){
-    $query = "SELECT u.name, vz.completed 
+    $query = "SELECT u.name, vz.user_id, vz.completed 
                 FROM veza_izvrsilaczadatak vz 
                 JOIN korisnici u ON vz.user_id = u.id 
                 WHERE vz.task_id = ?";
@@ -86,6 +85,19 @@ function getExecutorsList($db, $task_id){
     $executors_list = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     return $executors_list;
 }
+
+function isTaskExecutor($db, $user_id, $task_id) {
+    $stmt = $db->prepare("SELECT COUNT(*) AS cnt FROM veza_izvrsilaczadatak WHERE task_id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $task_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    return $row['cnt'] > 0; 
+}
+
+
+
 
 
 ?>
