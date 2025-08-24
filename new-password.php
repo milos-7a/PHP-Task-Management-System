@@ -15,10 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_id = $row['user_id'];
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Ažuriraj lozinku
             $query = "UPDATE korisnici SET password = '$hashed_password' WHERE id = $user_id";
             if ($db->query($query)) {
-                // Obriši token
                 $db->query("DELETE FROM token_reset_lozinke WHERE token = '$token'");
                 $success = "Lozinka uspešno promenjena! Možete se prijaviti.";
             } else {

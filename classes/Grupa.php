@@ -59,9 +59,8 @@ class Grupa {
     // Vrati grupe
     public function getGroups (){
         $groups = [];
-        $groups_query = "SELECT id, name FROM grupe_zadataka WHERE created_by = ?";
+        $groups_query = "SELECT id, name FROM grupe_zadataka";
         $stmt = $this->db->prepare($groups_query);
-        $stmt->bind_param("i", $this->user_id);
         $stmt->execute();
         $groups = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         return $groups;

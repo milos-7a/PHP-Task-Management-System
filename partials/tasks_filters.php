@@ -22,6 +22,7 @@
                         <th>Rok</th>
                         <th>Prioritet</th>
                         <th>Status</th>
+                        <th>Rukovodilac</th>
                         <th>Izvršioci</th>
                         <th>Prilozi</th>
                         <th>Akcije</th>
@@ -37,7 +38,8 @@
                                     data-status="<?php echo htmlspecialchars($task['status']); ?>"
                                     data-group-id="<?php echo htmlspecialchars($task['group_id']); ?>"
                                     data-group-name="<?php echo htmlspecialchars($task['group_name']); ?>"
-                                    data-manager-name="<?php echo htmlspecialchars($task['manager_name']); ?>"
+                                    data-manager-id="<?php echo htmlspecialchars($task['manager_id']); ?>"
+                                    data-user-id="<?php echo htmlspecialchars($user_id); ?>"
                             <?php   $taskfilepath = array_column($attachments[$task['id']], 'file_path');
                                     $user_ids = array_column(getExecutorsList($db, (int)$task['id']), 'user_id');?>
                                     data-attachments="<?php echo htmlspecialchars(json_encode($taskfilepath)); ?>"    
@@ -53,6 +55,7 @@
                         <td><?php echo htmlspecialchars($task['deadline']); ?></td>
                         <td><?php echo htmlspecialchars($task['priority']); ?></td>
                         <td><?php echo htmlspecialchars($task['status']); ?></td>
+                        <td><?php echo htmlspecialchars($task['manager_name']); ?></td>
                         <td>
                             <?php
                             $executors_list = getExecutorsList($db, (int)$task['id']);
@@ -91,7 +94,7 @@
                                         <?php else: ?>
                                             <span class="text-success">Zadatak je predat</span>
                                         <?php endif; ?>
-                                    <?php elseif ($user['role'] !== 'executor'): ?>
+                                    <?php elseif (($user['role'] == 'manager' && ($task['manager_id'] == $user_id)) || $user['role'] == 'admin'): ?>
                                         <button type="submit" name="zavrsi_zadatak" class="btn btn-success btn-sm"><i class="bi bi-clipboard2-check"></i></button>
                                         <button type="submit" name="otkazi_zadatak" class="btn btn-danger btn-sm"><i class="bi bi-clipboard-x"></i></button>
                                     <?php endif; ?>
@@ -115,8 +118,16 @@
                                                     data-task-id="<?php echo $task['id']; ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
-                                        <?php endif; ?>
+                                            <?php endif; ?>
+                                        <?php if($user['role'] == 'admin'): ?>
+                                            <button class="btn btn-secondary btn-sm edit-comment" 
+                                                    data-comment-id="<?php echo $comment['id']; ?>" 
+                                                    data-comment="<?php echo $comment['comment'] ?>"
+                                                    data-task-id="<?php echo $task['id']; ?>">
+                                                    <i class="bi bi-pencil"></i>
+                                            </button>
                                         </p>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <p>Nema komentara.</p>

@@ -29,6 +29,22 @@
                   <?php endforeach; ?>
               </select>
           </div>
+          <?php if ($role == 'admin'): ?>
+          <div class="mb-3">
+              <label for="form-label" class="form-label">Rukovodilac</label>
+              <select class="form-control" id="task_manager_id" name="manager_id" required>
+                  <?php foreach ($managers as $manager): ?>
+                      <option value="<?php echo $manager['id']; ?>">
+                          <?php echo htmlspecialchars($manager['name']); ?>
+                      </option>
+                  <?php endforeach; ?>
+              </select>
+          </div>
+          <?php elseif ($role == 'manager'): ?>
+            <div class="mb-3">
+              <input type="hidden" class="form-control" name="manager_id" id="task_user_id">
+          </div>
+          <?php endif; ?>
         
           <div class="mb-3">
               <label for="form-label" class="form-label">Izvršioci</label>

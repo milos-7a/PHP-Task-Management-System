@@ -91,19 +91,6 @@ class Zadatak {
         return true;
     }
 
-    // Obrisi zadatak
-        public function obrisiZadatak(){
-        $task_id = (int)$_POST['task_id'];
-        $query = "DELETE FROM zadaci WHERE id = ? AND manager_id = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $task_id, $this->user_id);
-
-        if (!$stmt->execute()) {
-            $error = "Greška pri otkazivanju zadatka: " . $this->db->error;
-        }
-        header("Location: " . $_SERVER['PHP_SELF']);
-        return true;
-    }
 
     // Dohvatanje greške
     public function getError() {

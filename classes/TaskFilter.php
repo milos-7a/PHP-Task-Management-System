@@ -22,7 +22,7 @@ class TaskFilter {
     }
 
     public function getTasks() {
-        $query = "SELECT t.id, t.title, t.description, t.group_id, t.deadline, t.status, t.priority,
+        $query = "SELECT t.id, t.title, t.description, t.group_id, t.deadline, t.status, t.priority, t.manager_id,
                         k.name AS manager_name,
                         g.name AS group_name,
                         GROUP_CONCAT(vz.user_id) AS executors,

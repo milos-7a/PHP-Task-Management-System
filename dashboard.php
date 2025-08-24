@@ -1,5 +1,5 @@
 <?php
-include 'includes/config.php';
+require_once 'includes/config.php';
 include 'includes/functions.php';
 include 'classes/TaskFilter.php';
 include 'classes/Grupa.php';
@@ -7,7 +7,7 @@ include 'classes/Zadatak.php';
 
 $role = $_SESSION['role'];
 require_role($role);
-error_log($role);
+//error_log($role);
 $user_id = $_SESSION['user_id'];
 $user = getUserById($db, $user_id);
 

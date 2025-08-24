@@ -222,6 +222,29 @@
             }
         });
     });
+    $('.edit-comment').on('click', function() {
+        var comment_id = $(this).data('comment-id');
+        var staricomment = $(this).data('comment');
+        var task_id = $(this).data('task-id');
+        let comment = prompt("Edit comment:", staricomment);
+        $.ajax({
+            url: 'includes/edit_comment.php',
+            type: 'POST',
+            data: { comment_id: comment_id, comment:comment },
+            success: function() {
+            var $p = $('#comments_' + task_id)
+                .find('button[data-comment-id="' + comment_id + '"]')
+                .closest('p');
+            var escapedComment = $('<div/>').text(comment).html();
+            $p.html('<strong>' + '<?php echo htmlspecialchars($user["name"]); ?>' + 
+                   ' (' + new Date().toLocaleString() + '):</strong> ' + 
+                   escapedComment);
+            },
+            error: function() {
+                alert('Greška pri brisanju komentara.');
+            }
+        });
+    });
     $(document).on("click", ".delete-task", function () {
         if (!confirm("Da li ste sigurni da želite da obrišete zadatak?")) return;
 
@@ -242,7 +265,6 @@
         });
     });
 
-    // Klik na "Izmeni"
     $(document).on("click", ".modify-task", function () {
         const btn = $(this);
 
@@ -253,8 +275,10 @@
         const priority = btn.data("priority");
         const status = btn.data("status");
         const groupId = btn.data("group-id");
+        const manager_id = btn.data("manager-id"); 
         const attachments = btn.data("attachments") || [];
         const executors = btn.data("executors") || [];
+        const user_id = btn.data("user-id");
 
         $("#task_id").val(taskId);
         $("#task_title").val(title);
@@ -263,6 +287,8 @@
         $("#task_priority").val(priority);
         $("#task_status").val(status);
         $("#task_group_id").val(groupId);
+        $("#task_manager_id").val(manager_id);
+        $("#task_user_id").val(user_id);
         $("#task_executors").val(executors);
 
         const attachmentsDiv = $("#existing_attachments");
@@ -301,7 +327,6 @@
         }
     });
 
-    // Slanje forme
     $("#taskForm").on("submit", function (e) {
         e.preventDefault();
             const formData = new FormData(this);
@@ -381,7 +406,6 @@
         });
     });
 
-    // Submit forme
     $("#userForm").on("submit", function(e) {
         e.preventDefault();
 

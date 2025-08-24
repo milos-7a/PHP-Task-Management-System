@@ -10,10 +10,11 @@ if (isset($_POST['task_id'])) {
     $priority = $_POST['priority'];
     $status = $_POST['status'];
     $group_id = (int)$_POST['group_id'];
+    $manager_id = (int)$_POST['manager_id'];
     $executors = $_POST['executors'] ?? []; 
     
-    $stmt = $db->prepare("UPDATE zadaci SET title = ?, description = ?, deadline = ?, priority = ?, status = ?, group_id = ? WHERE id = ?");
-    $stmt->bind_param("sssisii", $title, $description, $deadline, $priority, $status, $group_id, $task_id);
+    $stmt = $db->prepare("UPDATE zadaci SET title = ?, description = ?, deadline = ?, priority = ?, status = ?, group_id = ?, manager_id = ? WHERE id = ?");
+    $stmt->bind_param("sssisiii", $title, $description, $deadline, $priority, $status, $group_id, $manager_id, $task_id);
     $stmt->execute();
 
     $stmtDel = $db->prepare("DELETE FROM veza_izvrsilaczadatak WHERE task_id=?");
