@@ -1,4 +1,4 @@
-# PPP2 Task Management System
+# Task Management System
 
 A web-based task management application built with PHP, MySQL, and Bootstrap. This application allows users to manage tasks, groups, and collaborate with role-based access control.
 
